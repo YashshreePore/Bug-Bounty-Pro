@@ -1,0 +1,29 @@
+/* Custom styles for BugBounty Pro UI */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+/* Login Page Specific Styles (13 log in.html वर आधारित) */
+.login-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+    backdrop-filter: blur(5px);
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+}
+.input-group input {
+    border: 1px solid #f1f5f9;
+}
+/* Challenge Card Hover Animation */
+.challenge-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+/* Badge Icons */
+.badge-icon {
+    transition: transform 0.3s ease;
+}
+.badge-icon:hover {
+    transform: scale(1.1);
+}

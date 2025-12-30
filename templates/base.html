@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <title>BugBounty Pro - {% block title %}{% endblock %}</title>
+
+    <style>
+        :root { --primary-color: #6366f1; --secondary-color: #f8fafc; --error-color: #ef4444; --success-color: #10b981; }
+        /* Profile Dropdown Visibility */
+        .group:hover .group-dropdown {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-lg sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{{ url_for('home') }}" class="flex items-center space-x-2">
+                        <img src="{{ url_for('static', filename='icons/bb_logo.png') }}" 
+                             alt="BugBounty Pro Logo" 
+                             class="h-10 w-10 object-contain">
+                             
+                        <span class="text-xl font-bold text-gray-900">BugBounty Pro</span>
+                    </a>
+                    
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+
+                        {% if not current_user.is_anonymous and current_user.is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" 
+                            class="border-transparent text-red-600 hover:border-red-600 hover:text-red-800 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            <i class="fas fa-user-shield mr-1"></i> Admin Panel
+                        </a>
+                        {% endif %}
+
+                        <a href="{{ url_for('home') }}" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Dashboard</a>
+                        <a href="{{ url_for('challenges_list') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Challenges</a>
+                        <a href="{{ url_for('leaderboard_list') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Leaderboard</a>
+                        <a href="{{ url_for('profile') }}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Profile</a>
+                        
+                        {% if not current_user.is_anonymous and not current_user.has_active_subscription %}
+                            <a href="{{ url_for('plans_list') }}" class="border-transparent text-white bg-red-500 hover:bg-red-600 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition duration-150 transform hover:scale-105">
+                                <i class="fas fa-crown mr-1"></i> Upgrade
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    {% if current_user.is_authenticated %}
+                        
+                        {% if current_user.has_active_subscription %}
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full bg-yellow-400 text-yellow-900 mr-4">PREMIUM</span>
+                        {% endif %}
+
+                        <span class="text-gray-500 mr-4">
+                            <i class="fas fa-coins text-indigo-500 mr-1"></i> Pts: <span class="font-bold text-indigo-600">{{ current_user.points }}</span> | 
+                            <i class="fas fa-bolt text-green-500 mr-1"></i> XP: <span class="font-bold text-green-600" id="xp-counter">{{ current_user.xp }}</span>
+                        </span>
+
+                        <div class="ml-4 flex items-center group relative">
+                            <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Profile" class="h-10 w-10 rounded-full object-cover cursor-pointer hover:ring-2 hover:ring-indigo-500 transition duration-150">
+                            
+                            <div class="group-dropdown absolute right-0 top-full mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 opacity-0 transition-all duration-300 transform translate-y-2 pointer-events-none">
+                                <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                                    <span class="block px-4 py-2 text-sm text-gray-700 font-medium truncate border-b">{{ current_user.username }}</span>
+                                    <a href="{{ url_for('profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"><i class="fas fa-user-circle mr-2"></i> View Profile</a>
+                                    <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600" role="menuitem">
+                                        <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="ml-4 text-sm font-medium text-indigo-600 hover:text-indigo-800">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                {% for category, message in messages %}
+                    <div class="p-3 rounded text-sm {% if category == 'danger' %}bg-red-200 text-red-800{% elif category == 'success' %}bg-green-200 text-green-800{% else %}bg-blue-200 text-blue-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

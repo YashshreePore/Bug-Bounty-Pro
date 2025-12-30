@@ -1,0 +1,68 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block header_title %}Manage {{ model_name }} Data{% endblock %}
+
+{% block admin_content %}
+<div class="bg-gray-500 p-6 rounded-lg shadow-xl">
+    <h2 class="text-xl font-bold text-white mb-4">Total Records: {{ data|length }}</h2>
+
+    <div class="mb-4 flex space-x-4">
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+            <i class="fas fa-sort-alpha-down"></i> Sort (XP/Date)
+        </button>
+        <button class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">
+             <i class="fas fa-plus"></i> Add New Record
+        </button>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-900 text-sm">
+            <thead class="bg-gray-400">
+                <tr>
+                    {% for col in columns %}
+                        <th class="px-4 py-3 text-left">{{ col|capitalize }}</th>
+                    {% endfor %}
+                    <th class="px-4 py-3 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-900">
+                {% for row in data %}
+                <tr class="hover:bg-gray-400">
+                    {% for col_name in columns %}
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            {% set value = row[col_name] %}
+                            
+                            {% if value is none %}
+                                <span class="text-gray-900">N/A</span>
+                            {% elif value.__class__.__name__ == 'datetime' %}
+                                {{ value | convert_to_ist }}
+                            {% else %}
+                                {{ value }}
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    <td class="px-4 py-3 flex space-x-2">
+                        <button class="text-amber-400 hover:text-amber-300"><i class="fas fa-edit"></i></button>
+                        <button class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function editRecord(id) {
+        alert(`Editing record ID: ${id} in model {{ model_name }}... (CRUD Logic needed)`);
+    }
+
+    function deleteRecord(id) {
+        if (confirm(`Are you sure you want to delete record ID: ${id} from {{ model_name }}?`)) {
+             alert(`Deleting record ID: ${id}... (CRUD Logic needed)`);
+        }
+    }
+</script>
+{% endblock %}
+

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Upgrade to Premium{% endblock %}
+
+{% block content %}
+<section id="plans" class="mb-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">Upgrade to BugBounty Pro Premium</h1>
+    <p class="text-center text-gray-600 mb-10">Unlock Go & Ruby challenges, advanced analytics, and ad-free experience.</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        {% for plan in plans %}
+        {% set is_best_value = (plan.plan_name == 'Annual Pro') %}
+        {% set is_free_trial = (plan.price == 0) %}
+        {% set price_int = plan.price|int %}
+
+        <div class="bg-white overflow-hidden rounded-xl p-6 text-center relative transition duration-300 hover:shadow-2xl 
+            {% if is_best_value %}border-4 border-indigo-600 shadow-2xl scale-105{% else %}border border-gray-200 shadow-lg{% endif %}">
+            
+            {% if is_best_value %}
+                <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-sm font-bold px-4 py-1 rounded-full shadow-lg">BEST VALUE</span>
+            {% endif %}
+
+            <h2 class="text-xl font-bold mb-2 {% if is_free_trial %}text-green-700{% else %}text-gray-900{% endif %}">{{ plan.plan_name }}</h2>
+            
+            {% if is_free_trial %}
+                <p class="text-5xl font-extrabold mb-1 text-green-600">
+                    <span class="text-2xl font-normal">₹</span>0
+                    <span class="text-base font-normal"> / 7 days only</span>
+                </p>
+                <p class="text-sm font-medium text-gray-500 mb-4">Duration: {{ plan.duration_days }} Days Access</p>
+            {% else %}
+                <p class="text-5xl font-extrabold mb-1 text-gray-900">
+                    <span class="text-2xl font-normal">₹</span>{{ price_int }}
+                </p>
+                <p class="text-sm font-medium text-gray-500 mb-4">
+                    {% if plan.plan_name == 'Weekly Pro' %} (per week)
+                    {% elif plan.plan_name == 'Monthly Pro' %} (per month)
+                    {% elif plan.plan_name == 'Annual Pro' %} (per year)
+                    {% endif %}
+                </p>
+            {% endif %}
+            
+            <ul class="text-left text-sm space-y-3 mb-8">
+                <li class="flex items-start {% if is_free_trial %}text-green-600{% else %}text-indigo-600{% endif %}">
+                    <i class="fas fa-check-circle mr-2 mt-1"></i> Full Access ({{ plan.duration_days }} Days)
+                </li>
+                <li class="flex items-start {% if is_free_trial %}text-green-600{% else %}text-indigo-600{% endif %}">
+                    <i class="fas fa-tools mr-2 mt-1"></i> Advanced Tools (Yes)
+                </li>
+            </ul>
+
+            <form method="POST" action="{{ url_for('start_trial', plan_id=plan.plan_id) }}">
+                <button type="submit"
+                    class="w-full py-2 rounded-lg font-bold transition 
+                    {% if is_free_trial %}bg-green-600 text-white hover:bg-green-700{% else %}bg-indigo-600 text-white hover:bg-indigo-700{% endif %}">
+                    {% if is_free_trial %}Start Trial Now
+                    {% else %}Purchase Now{% endif %}
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

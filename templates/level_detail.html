@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-10">
+    <a href="{{ url_for('challenges_list', language_name='C') }}" class="text-indigo-600 hover:text-indigo-800 flex items-center mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to C Levels
+    </a>
+    
+    <div class="bg-white shadow-xl rounded-2xl p-8 border-t-4 border-indigo-600">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">{{ level.level_name }}</h1>
+        <p class="text-xl text-gray-600 mb-4">Level {{ level.level_number }} - {{ level.xp_required }} XP to complete</p>
+        <p class="text-gray-700 mb-8">This level focuses on the foundational building blocks of C programming. Complete all units to master the basics!</p>
+
+        <div class="space-y-4">
+            <h2 class="text-2xl font-bold text-indigo-700 border-b pb-2 mb-4">Units in This Level</h2>
+            
+            {% for unit in units %}
+            <div class="flex justify-between items-center bg-gray-50 p-4 rounded-lg shadow-sm hover:shadow-md transition duration-300">
+                <div class="flex items-center space-x-4">
+                    {% if unit.is_reward %}
+                        <span class="text-3xl text-yellow-600"><i class="fas fa-box-open fa-shake"></i></span>
+                    {% else %}
+                        <div class="bg-indigo-100 p-3 rounded-full text-indigo-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M12 10v4" />
+                            </svg>
+                        </div>
+                    {% endif %}
+                    
+                    <div>
+                        <p class="text-lg font-semibold text-gray-900">{{ unit.name }}</p>
+                        {% if not unit.is_reward %}
+                        <p class="text-sm text-gray-500">3 Challenges | 30 XP Potential</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                {% if unit.is_reward %}
+                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-bold transition shadow-md">
+                        CLAIM REWARD
+                    </button>
+                {% else %}
+                    <!-- 🔴 FIX: बटण challenge_detail रूटशी जोडले 🔴 -->
+                    <a href="{{ url_for('challenge_detail', challenge_id=unit.challenge_id) }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-bold transition shadow-md">
+                        START UNIT
+                    </a>
+                    {% endif %}
+            </div>
+            {% endfor %}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

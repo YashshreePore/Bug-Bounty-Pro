@@ -1,0 +1,60 @@
+{% extends 'admin/admin_base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block header_title %}Admin Dashboard & Reports{% endblock %}
+
+{% block admin_content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card-bg-dark p-6 rounded-lg shadow-lg border-l-4 border-light-accent" style="background-color: #394f77;">
+        <p class="text-sm text-gray-300">Total Registered Users</p>
+        <h2 class="text-4xl font-extrabold text-white">{{ users|length }}</h2>
+    </div>
+    
+    <div class="card-bg-dark p-6 rounded-lg shadow-lg border-l-4 border-light-accent" style="background-color: #394f77;">
+        <p class="text-sm text-gray-300">Total Challenges</p>
+        <h2 class="text-4xl font-extrabold text-white">{{ challenges|length }}</h2>
+    </div>
+    
+    <div class="card-bg-dark p-6 rounded-lg shadow-lg border-l-4 border-light-accent" style="background-color: #394f77;">
+        <p class="text-sm text-gray-300">Active Pro Subscriptions</p>
+        <h2 class="text-4xl font-extrabold text-white">{{ subscriptions|selectattr('is_active')|list|length }}</h2>
+    </div>
+</div>
+
+<div class="mb-10 p-6 rounded-lg shadow-xl" style="background-color: #394f77;">
+    <h2 class="text-2xl font-bold text-white mb-4 border-b border-gray-400 pb-2">User Management (Table)</h2>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-400 text-sm">
+            <thead style="background-color: #212c58;"> 
+                <tr>
+                    <th class="px-4 py-3 text-left text-white">ID</th>
+                    <th class="px-4 py-3 text-left text-white">Username</th>
+                    <th class="px-4 py-3 text-left text-white">XP / Pts</th>
+                    <th class="px-4 py-3 text-left text-white">Is Admin</th>
+                    <th class="px-4 py-3 text-left text-white">Actions</th>
+                </tr>
+            </thead>
+            <tbody style="background-color: #394f77;">
+                {% for user in users %}
+                <tr class="hover:bg-gray-700" style="color: white;"> 
+                    <td class="px-4 py-3">{{ user.user_id }}</td> 
+                    <td class="px-4 py-3">{{ user.username }}</td>
+                    <td class="px-4 py-3">{{ user.xp }} / {{ user.points }}</td>
+                    <td class="px-4 py-3">
+                         <span class="px-2 py-1 rounded-full text-xs font-semibold 
+                            {% if user.is_admin %}bg-red-500 text-white{% else %}bg-green-600 text-white{% endif %}">
+                            {{ 'Yes' if user.is_admin else 'No' }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 flex space-x-2">
+                        <button onclick="editUser({{ user.user_id }})" class="text-amber-400 hover:text-amber-300"><i class="fas fa-edit"></i> Edit</button>
+                        <button onclick="deleteUser({{ user.user_id }})" class="text-red-400 hover:text-red-300"><i class="fas fa-trash"></i> Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}     
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

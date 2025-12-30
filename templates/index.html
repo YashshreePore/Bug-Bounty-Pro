@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section id="dashboard" class="mb-12">
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">Welcome back, {{ current_user.username }}!</h1>
+    
+    <!-- 🔴 १. भाषा निवड विभाग 🔴 -->
+    <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Choose Your Language</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        {% for lang in languages %}
+        {% set lang_name = lang.language_name %}
+        {% set is_locked = (lang_name == 'Go' or lang_name == 'Ruby') %}
+        
+        <!-- निवडल्यावर /challenges/<LanguageName> ला जाईल -->
+        <a href="{% if is_locked %}#{% else %}{{ url_for('challenges_list', language_name=lang_name) }}{% endif %}" 
+           class="language-card p-4 rounded-xl shadow-lg transition duration-300 
+           
+           <!-- 🔴 FIX: Hover Effect आणि Border Classes जोडले 🔴 -->
+           transform hover:scale-[1.02] hover:translate-y-[-4px] 
+           
+           <!-- रंगसंगती (मूळ रंग पाळले आहेत) -->
+           {% if lang_name in ['C', 'Go'] %}bg-green-50 border-2 border-green-300 hover:border-green-600
+           {% elif lang_name in ['C++', 'Python', 'Ruby'] %}bg-blue-50 border-2 border-blue-300 hover:border-blue-600
+           {% elif lang_name in ['DSA', 'Java'] %}bg-red-50 border-2 border-red-300 hover:border-red-600
+           {% elif lang_name in ['C#'] %}bg-purple-50 border-2 border-purple-300 hover:border-purple-600 
+           {% else %}bg-gray-50 border-2 border-gray-300 hover:border-gray-600{% endif %} 
+           
+           {% if is_locked %}cursor-not-allowed{% endif %}">
+            
+            {% if is_locked %}
+                <!-- Lock Icon -->
+                <div class="absolute top-2 right-2 text-yellow-500 z-10"><i class="fas fa-lock"></i></div>
+            {% endif %}
+
+            <!-- इमेज टॅग URL वापरून -->
+            <div class="w-16 h-16 mb-2 mx-auto rounded-lg flex items-center justify-center">
+                <img src="{{ url_for('static', filename=lang.image_url) }}" 
+                     alt="{{ lang_name }} logo" 
+                     class="w-full h-full object-contain">
+            </div>
+            
+            <h3 class="font-bold text-lg text-gray-900">{{ lang_name }}</h3>
+            <p class="text-sm text-gray-600">
+                {% if lang_name in ['DSA', 'Java'] %}Enterprise applications
+                {% elif lang_name in ['Go', 'Ruby'] %}Systems programming
+                {% elif lang_name in ['C', 'C++'] %}Beginner-friendly
+                {% elif lang_name in ['C#'] %}Programming
+                {% else %}Beginner-friendly{% endif %}
+            </p>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Stats Section -->
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">2. Your Performance Stats</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- User Stats Card (Level) -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3"><i class="fas fa-user-shield text-white text-xl"></i></div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Current Level</dt>
+                            <dd>
+                                <div class="text-lg font-medium text-gray-900">{{ current_user.current_level.level_name }}</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2"><div class="bg-indigo-600 h-2.5 rounded-full" style="width: 75%"></div></div>
+                                <span class="text-xs text-gray-500">75% to next level (XP Progress)</span>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Challenges Completed Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+             <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-green-500 rounded-md p-3"><i class="fas fa-check-circle text-white text-xl"></i></div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Challenges Completed</dt>
+                            <dd><div class="text-lg font-medium text-gray-900">0</div><div class="text-xs text-gray-500">Last completed: None</div></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Current Points & XP Card -->
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3"><i class="fas fa-bolt text-white text-xl"></i></div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total XP & Points</dt>
+                            <dd><div class="text-lg font-medium text-gray-900">XP: {{ current_user.xp }}</div><div class="text-xs text-gray-500">Points: {{ current_user.points }} (Currency: {{ current_user.virtual_currency }})</div></dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Challenges Link -->
+<section class="mt-8">
+    <a href="{{ url_for('challenges_list') }}" class="w-full inline-flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+        <i class="fas fa-bug mr-2"></i> View All Available Challenges
+    </a>
+</section>
+{% endblock %}

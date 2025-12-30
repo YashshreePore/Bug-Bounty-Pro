@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Leaderboard{% endblock %}
+{% block content %}
+<section id="leaderboard-page">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">Top Bug Bounty Hunters (XP Ranking)</h1>
+    
+    <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total XP</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Level</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for user in top_users %}
+                <tr class="{% if user.user_id == current_user.user_id %}bg-indigo-50 font-semibold{% endif %}">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ loop.index }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <img class="h-8 w-8 rounded-full mr-3 object-cover" src="{{ user.profile_picture_url }}" alt="Profile">
+                            <span class="text-sm text-gray-900">{{ user.username }}</span>
+                            {% if user.has_active_subscription %}
+                            <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pro</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-bold">{{ user.xp }} XP</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.current_level.level_name }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No users found to display on the leaderboard.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
